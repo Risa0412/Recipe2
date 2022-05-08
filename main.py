@@ -1,8 +1,4 @@
-from ast import Param
-from cgitb import text
-from email.mime import image
 import json
-from turtle import title
 from crawler.builder import Builder
 
 
@@ -23,7 +19,7 @@ class Manager:
     def get_content(self, id, category, tag, param=None):
         self.ig = self.soup.find('div', {'id': id})
         self.category = category
-        self.result[category] =  self.ig.find(tag, param if param else '').getText().strip()
+        self.result[category] = self.ig.find(tag, param or '').getText().strip()
 
     def get_ingredients_row(self):
         il = self.ig.find('div', {'id': 'ingredients_list'})
@@ -67,11 +63,12 @@ class Manager:
         # https://cookpad.com/cooking_basics/6190
         b = Builder()
         # soup = b.get_data(f'https://cookpad.com{url}')
-        soup = b.get_data(f'https://cookpad.com/cooking_basics/20523')
+        soup = b.get_data('https://cookpad.com/cooking_basics/20523')
         article = soup.find('div', {'class': 'article_wrapper'})
         title = article.find('h1', {'class': 'title_border'}).getText().strip()
         descriptions = article.find('div', {'class': 'main_content'}).find_all()
         text = {}
+        print(descriptions)
         for tag in descriptions:
             print(tag.name)
         # for counter, description in enumerate(descriptions):
@@ -83,9 +80,12 @@ class Manager:
         #     text[counter] = {'description': description.getText().strip(), 'image': images}
         return {'title': title, 'description': text}
 
-
-    # argsはディクショナリ型。
     def runtime(self, args):
+        """
+
+        :param args: argsはディクショナリ型。
+        :return:
+        """
         for values in args.values():
             # 「**」はディクショナリ型の中からキー値を取得する（Unpacking）
             self.get_content(**values['params'])
@@ -94,13 +94,12 @@ class Manager:
 
     def get_result(self):
         param = {
-            'indent':4,
-            'sort_keys':True, 
-            'default':str,
-            'ensure_ascii':False
+            'indent': 4,
+            'sort_keys': True,
+            'default': str,
+            'ensure_ascii': False
         }
         print(json.dumps(self.result, **param))
-
 
 
 if __name__ == '__main__':
@@ -142,21 +141,15 @@ if __name__ == '__main__':
         }
     }
 
-    
     # urls = ['https://cookpad.com/recipe/2312038', 'https://cookpad.com/recipe/7099551', 'https://cookpad.com/recipe/6960335', 'https://cookpad.com/recipe/7158352', 'https://cookpad.com/recipe/2312110']
     urls = ['https://cookpad.com/recipe/2312038']
 
     for url in urls:
         m.get_soup(url)
-    
         m.get_recipe_title()
-
         m.runtime(runtime)
-
         m.get_result()
 
-    
-
-# text cleaning: '/n'
+    # text cleaning: '/n'
 
 
