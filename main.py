@@ -1,5 +1,7 @@
+from email.mime import image
 import json
 from crawler.builder import Builder
+from tags import Tags
 
 
 class Manager:
@@ -65,19 +67,15 @@ class Manager:
         # soup = b.get_data(f'https://cookpad.com{url}')
         soup = b.get_data('https://cookpad.com/cooking_basics/20523')
         article = soup.find('div', {'class': 'article_wrapper'})
-        title = article.find('h1', {'class': 'title_border'}).getText().strip()
+        t = Tags()
+        title = t.heading(article.find('h1', {'class': 'title_border'}))
+        print(title)
         descriptions = article.find('div', {'class': 'main_content'}).find_all()
         text = {}
         print(descriptions)
         for tag in descriptions:
-            print(tag.name)
-        # for counter, description in enumerate(descriptions):
-        #     images = []
-        #     get_images = description.find_all('img')
-        #     if get_images:
-        #         for image in get_images:
-        #             images.append(image['src'])
-        #     text[counter] = {'description': description.getText().strip(), 'image': images}
+            # 例）：getattr(class, funcName)(tag)=t.heading(tag)
+            print(getattr(t, 'heading' if tag.name.startswith('h') else tag.name)(tag))
         return {'title': title, 'description': text}
 
     def runtime(self, args):
@@ -148,7 +146,7 @@ if __name__ == '__main__':
         m.get_soup(url)
         m.get_recipe_title()
         m.runtime(runtime)
-        m.get_result()
+        # m.get_result()
 
     # text cleaning: '/n'
 
