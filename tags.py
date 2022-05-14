@@ -14,6 +14,9 @@ class Tags:
     def p(self, soup):
         return soup.getText().strip()
 
+    def span(self, soup):
+        return soup.getText().strip()
+
 '''
 p
 a

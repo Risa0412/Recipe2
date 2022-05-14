@@ -1,4 +1,3 @@
-from email.mime import image
 import json
 from crawler.builder import Builder
 from tags import Tags
@@ -7,6 +6,12 @@ from tags import Tags
 class Manager:
     def __init__(self):
         self.result = {}
+        self.reference = {
+            "p": "description",
+            "span": "description",
+            "img": "image",
+            "a": "help_links"
+        }
 
     def get_soup(self, url):
         b = Builder()
@@ -65,18 +70,30 @@ class Manager:
         # https://cookpad.com/cooking_basics/6190
         b = Builder()
         # soup = b.get_data(f'https://cookpad.com{url}')
-        soup = b.get_data('https://cookpad.com/cooking_basics/20523')
+        soup = b.get_data('https://cookpad.com/cooking_basics/12073')
         article = soup.find('div', {'class': 'article_wrapper'})
-        t = Tags()
-        title = t.heading(article.find('h1', {'class': 'title_border'}))
-        print(title)
-        descriptions = article.find('div', {'class': 'main_content'}).find_all()
-        text = {}
-        print(descriptions)
-        for tag in descriptions:
-            # 例）：getattr(class, funcName)(tag)=t.heading(tag)
-            print(getattr(t, 'heading' if tag.name.startswith('h') else tag.name)(tag))
-        return {'title': title, 'description': text}
+
+        self.tags = Tags()
+        title = self.tags.heading(article.find('h1', {'class': 'title_border'}))
+        descriptions = article.find('div', {'class': 'main_content'})
+        text = {
+            'title': title,
+            "description": "",
+            "image": "",
+            "help_links": ""
+        }
+        self.get_child_tags(descriptions, text)
+        return text
+
+    def get_child_tags(self, parent, text, counter=0, tree=0):
+        for tag in parent.find_all(recursive=False):
+            print(' ' * tree, tag.name, tag.parent.name, counter)
+            to_add = getattr(self.tags, 'heading' if tag.name.startswith('h') else tag.name)(tag)
+            if to_add not in text[self.reference[tag.name]]:
+                text[self.reference[tag.name]] += to_add 
+
+            self.get_child_tags(tag, text, counter, tree+1)
+            counter += 1
 
     def runtime(self, args):
         """
@@ -146,7 +163,7 @@ if __name__ == '__main__':
         m.get_soup(url)
         m.get_recipe_title()
         m.runtime(runtime)
-        # m.get_result()
+        m.get_result()
 
     # text cleaning: '/n'
 
