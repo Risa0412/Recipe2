@@ -14,6 +14,11 @@ class Tags:
     def p(self, soup):
         return soup.getText().strip()
 
+    def span(self, soup):
+        if soup.find('img'):
+            return 
+        return soup.getText().strip()
+
 '''
 p
 a

@@ -1,5 +1,6 @@
 from email.mime import image
 import json
+from pickle import EXT4
 from crawler.builder import Builder
 from tags import Tags
 
@@ -7,6 +8,7 @@ from tags import Tags
 class Manager:
     def __init__(self):
         self.result = {}
+        self.text = {}
 
     def get_soup(self, url):
         b = Builder()
@@ -65,18 +67,42 @@ class Manager:
         # https://cookpad.com/cooking_basics/6190
         b = Builder()
         # soup = b.get_data(f'https://cookpad.com{url}')
-        soup = b.get_data('https://cookpad.com/cooking_basics/20523')
+        soup = b.get_data('https://cookpad.com/cooking_basics/12073')
         article = soup.find('div', {'class': 'article_wrapper'})
         t = Tags()
         title = t.heading(article.find('h1', {'class': 'title_border'}))
-        print(title)
-        descriptions = article.find('div', {'class': 'main_content'}).find_all()
+        descriptions = article.find('div', {'class': 'main_content'})
         text = {}
-        print(descriptions)
-        for tag in descriptions:
+        self.get_child_path(descriptions, text)
+        print(json.dumps(text, indent=4))
+        # for tag in descriptions:
             # 例）：getattr(class, funcName)(tag)=t.heading(tag)
-            print(getattr(t, 'heading' if tag.name.startswith('h') else tag.name)(tag))
+            # print(tag.name)
+            # for child in tag.children:
+            #     if child and not child.find_parents():
+            #         print('   ', child.name)
+            # print(getattr(t, 'heading' if tag.name.startswith('h') else tag.name)(tag))
         return {'title': title, 'description': text}
+
+    # def get_child_path(self, parent, tree_num=0):
+    #     for node in parent.find_all(recursive=False):
+    #         print('-' * tree_num, node.name, tree_num)
+    #         self.text[parent] = node
+    #         print('-' * tree_num, self.text[parent].getText(), node.name)
+    #         self.get_child_path(node, tree_num + 1)
+    
+    def get_child_path(self, parent, text, counter=0, tree=0):
+        for tag in parent.find_all(recursive=False):
+            if tree == 0:
+                text[f"{tag.name}{counter}"] = {}
+            elif tree == 1:
+                text[f"{tag.parent.name}{counter}"][f"{tag.name}{counter}"] = {}
+
+            print(' ' * tree, tag.name, tag.parent.name, counter)
+
+            # print(getattr(self.tags, 'heading' if tag.name.startswith('h') else tag.name)(tag))
+            self.get_child_path(tag, text, counter, tree+1)
+            counter += 1
 
     def runtime(self, args):
         """
@@ -151,3 +177,10 @@ if __name__ == '__main__':
     # text cleaning: '/n'
 
 
+'''
+https://cookpad.com/cooking_basics/12073
+https://cookpad.com/cooking_basics/5343
+https://cookpad.com/cooking_basics/20521
+https://cookpad.com/cooking_basics/11347
+https://cookpad.com/cooking_basics/5071
+'''
