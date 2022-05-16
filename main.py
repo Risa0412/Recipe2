@@ -85,15 +85,13 @@ class Manager:
         self.get_child_tags(descriptions, text)
         return text
 
-    def get_child_tags(self, parent, text, counter=0, tree=0):
+    def get_child_tags(self, parent, text):
         for tag in parent.find_all(recursive=False):
-            print(' ' * tree, tag.name, tag.parent.name, counter)
             to_add = getattr(self.tags, 'heading' if tag.name.startswith('h') else tag.name)(tag)
             if to_add not in text[self.reference[tag.name]]:
-                text[self.reference[tag.name]] += to_add 
+                text[self.reference[tag.name]] += to_add
 
-            self.get_child_tags(tag, text, counter, tree+1)
-            counter += 1
+            self.get_child_tags(tag, text)
 
     def runtime(self, args):
         """
