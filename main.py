@@ -1,6 +1,4 @@
-from email.mime import image
 import json
-from pickle import EXT4
 from crawler.builder import Builder
 from tags import Tags
 
@@ -8,7 +6,12 @@ from tags import Tags
 class Manager:
     def __init__(self):
         self.result = {}
-        self.text = {}
+        self.reference = {
+            "p": "description",
+            "span": "description",
+            "img": "image",
+            "a": "help_links"
+        }
 
     def get_soup(self, url):
         b = Builder()
@@ -51,13 +54,22 @@ class Manager:
         for row in rows:
             step_num = row.find('dt', {'class': 'step_number'}).getText().strip()
             image = row.find('img')['data-large-photo'] if row.find('img') else ''
-            description = row.find('p')
-            a_links = description.find_all('a', href=True)
+            descriptions = row.find('p')
+            description = descriptions.getText().strip()
+            a_links = descriptions.find_all('a', href=True)
             help_links = {}
             if a_links:
                 for link in a_links:
                     help_links[link.getText().strip()] = self.get_basic_cooking(link['href'])
-            self.result['preparation_list'][step_num] = {'image':image, 'description':description.getText().strip(), 'help_links':help_links}
+            var_dict = {'image':[], 'description':"", 'help_links':[]}
+            for key in var_dict:
+                if isinstance(var_dict[key], str):
+                    var_dict[key] += eval(key)
+                elif isinstance(var_dict[key], list):
+                    var_dict[key].append(eval(key))
+
+            self.result['preparation_list'][step_num] = var_dict
+
 
     def get_memo_history(self):
         self.result[self.category.split('_')[0]] = self.ig.find('div', {'class': 'text_content'}).getText().strip()
@@ -69,40 +81,36 @@ class Manager:
         # soup = b.get_data(f'https://cookpad.com{url}')
         soup = b.get_data('https://cookpad.com/cooking_basics/12073')
         article = soup.find('div', {'class': 'article_wrapper'})
-        t = Tags()
-        title = t.heading(article.find('h1', {'class': 'title_border'}))
+
+        self.tags = Tags()
+        title = self.tags.heading(article.find('h1', {'class': 'title_border'}))
         descriptions = article.find('div', {'class': 'main_content'})
-        text = {}
-        self.get_child_path(descriptions, text)
-        print(json.dumps(text, indent=4))
-        # for tag in descriptions:
-            # 例）：getattr(class, funcName)(tag)=t.heading(tag)
-            # print(tag.name)
-            # for child in tag.children:
-            #     if child and not child.find_parents():
-            #         print('   ', child.name)
-            # print(getattr(t, 'heading' if tag.name.startswith('h') else tag.name)(tag))
-        return {'title': title, 'description': text}
+        text = {
+            'title': title,
+            "description": "",
+            "image": [],
+            "help_links": []
+        }
+        self.get_child_tags(descriptions, text)
+        return text
 
-    # def get_child_path(self, parent, tree_num=0):
-    #     for node in parent.find_all(recursive=False):
-    #         print('-' * tree_num, node.name, tree_num)
-    #         self.text[parent] = node
-    #         print('-' * tree_num, self.text[parent].getText(), node.name)
-    #         self.get_child_path(node, tree_num + 1)
-    
-    def get_child_path(self, parent, text, counter=0, tree=0):
+    def get_child_tags(self, parent, text):
         for tag in parent.find_all(recursive=False):
-            if tree == 0:
-                text[f"{tag.name}{counter}"] = {}
-            elif tree == 1:
-                text[f"{tag.parent.name}{counter}"][f"{tag.name}{counter}"] = {}
+            to_add = getattr(self.tags, 'heading' if tag.name.startswith('h') else tag.name)(tag)
+            if to_add not in text[self.reference[tag.name]]:
+                if isinstance(text[self.reference[tag.name]], str):
+                    text[self.reference[tag.name]] += to_add
+                elif isinstance(text[self.reference[tag.name]], list):
+                    text[self.reference[tag.name]].append(to_add)
 
-            print(' ' * tree, tag.name, tag.parent.name, counter)
+            self.get_child_tags(tag, text)
 
-            # print(getattr(self.tags, 'heading' if tag.name.startswith('h') else tag.name)(tag))
-            self.get_child_path(tag, text, counter, tree+1)
-            counter += 1
+    # @staticmethod
+    # def add_data(var, data):
+    #     if isinstance(var, str):
+    #         var += data
+    #     elif isinstance(var, list):
+    #         var.append(data)
 
     def runtime(self, args):
         """
@@ -172,7 +180,7 @@ if __name__ == '__main__':
         m.get_soup(url)
         m.get_recipe_title()
         m.runtime(runtime)
-        # m.get_result()
+        m.get_result()
 
     # text cleaning: '/n'
 

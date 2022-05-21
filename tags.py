@@ -15,8 +15,6 @@ class Tags:
         return soup.getText().strip()
 
     def span(self, soup):
-        if soup.find('img'):
-            return 
         return soup.getText().strip()
 
 '''
