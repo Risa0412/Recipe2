@@ -1,0 +1,36 @@
+{
+    "ingredients": {
+        "func": "get_ingredients_row",
+        "params": {
+            "id": "ingredients",
+            "category": "ingredients_title",
+            "tag": "h2",
+            "param": {"class": "recipe_heading"}
+        }
+    },
+    "steps": {
+        "func": "get_steps",
+        "params": {
+            "id": "steps_wrapper",
+            "category": "preparation_title",
+            "tag": "h2",
+            "param": {"class": "recipe_heading"}
+        }
+    },
+    "memo": {
+        "func": "get_memo_history",
+        "params": {
+            "id": "memo_wrapper",
+            "category": "memo_title",
+            "tag": "h3"
+        }
+    },
+    "history": {
+        "func": "get_memo_history",
+        "params": {
+            "id": "history_wrapper",
+            "category": "history_title",
+            "tag": "h3"
+        }
+    }
+}

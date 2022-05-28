@@ -78,8 +78,8 @@ class Manager:
         # article_wrapper show
         # https://cookpad.com/cooking_basics/6190
         b = Builder()
-        # soup = b.get_data(f'https://cookpad.com{url}')
-        soup = b.get_data('https://cookpad.com/cooking_basics/12073')
+        soup = b.get_data(f'https://cookpad.com{url}')
+        # soup = b.get_data('https://cookpad.com/cooking_basics/12073')
         article = soup.find('div', {'class': 'article_wrapper'})
 
         self.tags = Tags()
@@ -132,46 +132,12 @@ class Manager:
             'ensure_ascii': False
         }
         print(json.dumps(self.result, **param))
+        return self.result
 
 
 if __name__ == '__main__':
     m = Manager()
-    runtime = {
-        'ingredients': {
-            'func': 'get_ingredients_row',
-            'params': {
-                'id': 'ingredients',
-                'category': 'ingredients_title',
-                'tag': 'h2',
-                'param': {'class': 'recipe_heading'}
-            }
-        },
-        'steps': {
-            'func': 'get_steps',
-            'params': {
-                'id': 'steps_wrapper',
-                'category': 'preparation_title',
-                'tag': 'h2',
-                'param': {'class': 'recipe_heading'}
-            }
-        },
-        'memo': {
-            'func': 'get_memo_history',
-            'params': {
-                'id': 'memo_wrapper',
-                'category': 'memo_title',
-                'tag': 'h3'
-            }
-        },
-        'history': {
-            'func': 'get_memo_history',
-            'params': {
-                'id': 'history_wrapper',
-                'category': 'history_title',
-                'tag': 'h3'
-            }
-        }
-    }
+    runtime = json.load(open("runtime.json"))
 
     # urls = ['https://cookpad.com/recipe/2312038', 'https://cookpad.com/recipe/7099551', 'https://cookpad.com/recipe/6960335', 'https://cookpad.com/recipe/7158352', 'https://cookpad.com/recipe/2312110']
     urls = ['https://cookpad.com/recipe/2312038']
