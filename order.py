@@ -1,6 +1,3 @@
-from unittest import result
-
-
 class Order:
     def __init__(self, order, data):
         self.order = order
