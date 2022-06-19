@@ -1,93 +1,47 @@
+from orders.ingredients import Ingredients
+from orders.ingredient import Ingredient
+from orders.page import Page
+
+
 class Order:
     def __init__(self, order, data):
         self.order = order
         self.data = data
         self.reference = {
-            "材料":self.ingredients, 
-            "ざいりょう":self.ingredients, 
-            "ザイリョウ":self.ingredients, 
-            "最初":self.start_page,
-            "スタート":self.start_page
+            "材料":self.get_ingredients, 
+            "ざいりょう":self.get_ingredients, 
+            "ザイリョウ":self.get_ingredients, 
+            "最初":self.get_start_page,
+            "スタート":self.get_start_page
             }
         self.runtime()
 
-    def ingredients(self):
-        result = []
-        if self.data["ingredients_list"].get("default"):
-            result.extend(
-                f'{ingredient}は{measure}' 
-                for (ingredient, measure) in self.data["ingredients_list"]["default"].items()
-            )
-            del self.data["ingredients_list"]["default"]
+    def get_ingredients(self):  
+        """
+        大項目の材料名を命令としたとき、データ(self.data["ingredients_list"])から材料の情報を返す
+        :return: 
+        """
+        return Ingredients(self.data["ingredients_list"], self.order).return_data()
 
-        for category, ingredients in self.data["ingredients_list"].items():
-            result.append(f'{category}の材料は')
-            result.extend(
-                f'{ingredient}は{measure}' 
-                for (ingredient, measure) in ingredients.items()
-            )
-        return result
+    def get_ingredient(self):
+        """
+        各材料名を命令としたとき、データ(self.data["ingredients_list"])から材料の情報を返す
+        :return: 
+        """
+        return Ingredient(self.data["ingredients_list"], self.order).return_data()
 
-    def ingredient(self):
-        result = []
-        for category, ingredients in self.data["ingredients_list"].items():
-            # self.orderと"default"以外のタイトルと比較
-            if self.order in category:
-                # 読取りwordがタイトルのとき、全ての材料名と分量を読み上げ return
-                result.append(f'{category}の材料は')
-                result.extend(
-                    f'{ingredient}は{measure}' 
-                    for (ingredient, measure) in ingredients.items()
-                )
-
-            else:
-                result.extend(
-                    f'{f"{category}に使う" if category != "default" else ""}{ingredient}は{measure}'  
-                    for ingredient, measure in ingredients.items()
-                    if self.order in ingredient
-                )
-                # 読取りwordと材料名を順番に比較
-                # for ingredient, measure in ingredients.items():
-                #     # 読取りwordが材料名のとき、
-                #     if self.order in ingredient:
-                #         # "default"以外の材料名であるとき、
-
-                #         # タイトルと材料名と分量を読み上げreturn
-                #         result.append(
-                #             f'{f"{category}に使う" if category != "default" else ""}{ingredient}は{measure}'                    
-                #         )
-                        # "default"の材料名であるとき、
-
-                            # 材料名と分量を読み上げreturn
-                        
-                    # 読取りwordがどちらでもないとき、false
-
-
-        if not result:
-            return self.error
-
-        return result
-                    
-    def start_page(self):
-        result = []
-        result.append(self.data["preparation_list"]["1"]['image'])
-        describe = f'{self.announce_pages("1")}、{self.data["preparation_list"]["1"]["description"]}'
-        if self.data["preparation_list"]["1"]['help_links']:
-            for links in self.data["preparation_list"]["1"]['help_links']:
-                describe = describe.replace(list(links.keys())[0], f'[red]{list(links.keys())[0]}[/red]')
-        result.append(describe)
-        return result
-    
-    def announce_pages(self, page_position):
-        page_list = list(self.data["preparation_list"].keys())
-        reference = {"1":"最初に", page_list[-1]:"最後に"}
-        return reference.get(page_position, f'{page_position}、次に')
+    def get_start_page(self):
+        """
+        ページの順番に関する単語を命令としたとき、データ(self.data["preparation_list"])から該当ページの情報を返す
+        :return: 
+        """
+        return Page(self.data["preparation_list"]).return_data()
 
     def error(self):
         return f'「{self.order}」は材料に含まれません。'
 
     def runtime(self):
-        func = self.reference.get(self.order, self.ingredient)
+        func = self.reference.get(self.order, self.get_ingredient)
         result = func()
         if isinstance(result, str):
             print(result)

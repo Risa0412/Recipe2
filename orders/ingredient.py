@@ -1,38 +1,26 @@
-class Ingredients:
-    def __init__(self) -> None:
-        pass
-        
-    def ingredients(self):
-        result = []
-        if self.data["ingredients_list"].get("default"):
-            result.extend(
-                f'{ingredient}は{measure}' 
-                for (ingredient, measure) in self.data["ingredients_list"]["default"].items()
-            )
-            del self.data["ingredients_list"]["default"]
+class Ingredient:
+    def __init__(self, data, order):
+        self.data = data
+        self.order = order
+        self.result = []
 
-        for category, ingredients in self.data["ingredients_list"].items():
-            result.append(f'{category}の材料は')
-            result.extend(
-                f'{ingredient}は{measure}' 
-                for (ingredient, measure) in ingredients.items()
-            )
-        return result
-
-    def ingredient(self):
-        result = []
-        for category, ingredients in self.data["ingredients_list"].items():
+    def get_ingredient(self):
+        """
+        データから、各材料において必要な分量を取得する
+        :return: 
+        """
+        for category, ingredients in self.data.items():
             # self.orderと"default"以外のタイトルと比較
             if self.order in category:
                 # 読取りwordがタイトルのとき、全ての材料名と分量を読み上げ return
-                result.append(f'{category}の材料は')
-                result.extend(
+                self.result.append(f'{category}の材料は')
+                self.result.extend(
                     f'{ingredient}は{measure}' 
                     for (ingredient, measure) in ingredients.items()
                 )
 
             else:
-                result.extend(
+                self.result.extend(
                     f'{f"{category}に使う" if category != "default" else ""}{ingredient}は{measure}'  
                     for ingredient, measure in ingredients.items()
                     if self.order in ingredient
@@ -52,10 +40,14 @@ class Ingredients:
                             # 材料名と分量を読み上げreturn
                         
                     # 読取りwordがどちらでもないとき、false
+    def return_data(self):
+        """
+        引数のデータから、データ処理する関数と、結果を取得する関数を実行する
+        :return: 
+        """
+        self.get_ingredient()
+        if not self.result:
+            return "この命令は見つかりませんでした。"
 
-
-        if not result:
-            return self.error
-
-        return result
+        return self.result
 
