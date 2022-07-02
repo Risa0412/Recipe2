@@ -14,6 +14,15 @@ class Page:
             for links in self.data["1"]['help_links']:
                 describe = describe.replace(list(links.keys())[0], f'[red]{list(links.keys())[0]}[/red]')
         self.result.append(describe)
+
+    def next_page(self):
+        """
+        次のページの情報を取得する
+        :return:
+        """
+        # self.result.append(self.data[])
+        pass
+
     
     def announce_pages(self, page_position):
         """
