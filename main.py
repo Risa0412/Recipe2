@@ -1,11 +1,17 @@
 import json
-from unittest import result
+from tools.tools import Hash
 from crawler.builder import Builder
 from tags import Tags
 
 
 class Manager:
     def __init__(self):
+        self.param_json = {
+            'indent': 4,
+            'sort_keys': True,
+            'default': str,
+            'ensure_ascii': False
+        }
         self.result = {}
         self.reference = {
             "p": "description",
@@ -124,48 +130,14 @@ class Manager:
             self.get_content(**values['params'])
             # self＝Class, メソッド内の関数名
             getattr(self, values['func'])()
-
-    def make_page(self):
-        """
-        ページ情報の順番を定義する
-        :return: dic
-
-        title
-        history_title
-        history
-        memo_title
-        memo
-        ingredients_title
-        ingredients
-        """
-        sequence = {
-            0: {
-                "title": self.result['title'],
-                "history_title": self.result['history_title'],
-                "history": self.result['history'],
-                "memo_title": self.result['memo_title'],
-                "memo": self.result['memo'],
-                "ingredients_title": self.result['ingredients_title'],
-                "ingredients": self.result['ingredients_list']
-            }
-        }
-
-        for num, step_info in enumerate(self.result['preparation_list'].values(), 1):
-            sequence[num] = step_info
-
-        self.get_result(sequence)
         
+        # ファイルの作成
+        self.save_recipe(Hash(self.result['title']).get_hash())        
 
-    def get_result(self, data=None):
-        param = {
-            'indent': 4,
-            'sort_keys': True,
-            'default': str,
-            'ensure_ascii': False
-        }
+    def save_recipe(self, filename, data=None):
         data = self.result if not data else data
-        print(json.dumps(data, **param))
-        return data
+        with open(f'{filename}.json', 'w', encoding='utf-8') as f:
+            json.dump(data, f, **self.param_json)
 
 
 if __name__ == '__main__':
@@ -179,8 +151,6 @@ if __name__ == '__main__':
         m.get_soup(url)
         m.get_recipe_title()
         m.runtime(runtime)
-        # m.get_result()
-        m.make_page()
 
     # text cleaning: '/n'
 
