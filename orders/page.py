@@ -16,8 +16,13 @@ class Page:
         次のページの情報を取得する
         :return:
         """
-        self.page_num = self.page_list[self.page_list.index(self.page_num) + 1]
-        return self.page_num
+        num = self.page_list.index(self.page_num)
+        if self.page_list[num] < self.page_list[-1]:
+            self.page_num = self.page_list[num + 1]
+        else:
+            self.page_num = self.page_list[num]
+            print('エラー：このページは最後のページです！')
+        
     
     def get_page(self):
         """
@@ -38,10 +43,6 @@ class Page:
         """
         reference = {self.page_list[1]:"最初に", self.page_list[-1]:"最後に"}
         return reference.get(page_position, f'{page_position}、次に')
-
-    def page_position(self):
-        print(self.page_num)
-        return self.page_num
 
     def return_data(self):
         """
