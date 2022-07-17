@@ -2,6 +2,7 @@ import json
 from tools.tools import Hash
 from crawler.builder import Builder
 from tags import Tags
+from pagination import Pagination
 
 
 class Manager:
@@ -138,6 +139,8 @@ class Manager:
         data = self.result if not data else data
         with open(f'{filename}.json', 'w', encoding='utf-8') as f:
             json.dump(data, f, **self.param_json)
+        with open(f'page_{filename}.json', 'w', encoding='utf-8') as f:
+            json.dump(Pagination(data).type_page(), f, **self.param_json)
 
 
 if __name__ == '__main__':

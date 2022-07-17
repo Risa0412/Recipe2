@@ -1,10 +1,11 @@
+import re
 from orders.ingredients import Ingredients
 from orders.ingredient import Ingredient
 from orders.page import Page
 
 
 class Order:
-    def __init__(self, order, data):
+    def __init__(self, order, data, page_position):
         self.order = order
         self.data = data
         self.reference = {
@@ -19,7 +20,7 @@ class Order:
             "サイゴ":self.get_last_page,
             "さいご":self.get_last_page
             }
-        self.runtime()
+        self.page_position = page_position
 
     def get_ingredients(self):  
         """
@@ -50,7 +51,10 @@ class Order:
         ページの順番に関する単語を命令としたとき、データ(self.data["preparation_list"])から該当ページの情報を返す
         :return: 
         """
-        return Page(self.data["preparation_list"]).return_data()
+        p = Page(self.data, self.page_position)
+        p.next_page()
+        return p.return_data()
+
 
     def get_last_page(self):
         """
@@ -66,7 +70,7 @@ class Order:
 
     def runtime(self):
         func = self.reference.get(self.order, self.get_ingredient)
-        result = func()
+        result, self.page_position = func()
         if isinstance(result, str):
             print(result)
         elif isinstance(result, list):
@@ -75,14 +79,19 @@ class Order:
 
     
 if __name__ == '__main__':
-    from pagination import Pagination
     import json
     with open('120827325313727089740978093670340282809289569548.json', encoding='utf-8') as file:
         i = json.load(file)
-    list_j = ['最初', 'スタート', '進む', '前', '戻る', '最後', '終わり']
+    with open('page_120827325313727089740978093670340282809289569548.json', encoding='utf-8') as file:
+        j = json.load(file)
+    list_j = ['最初', 'スタート', '進む', '前', '戻る', '次', '最後', '終わり']
     order = input("命令は: ")
+    page_position = None
     while order != "停止":
-        data = Pagination(i).type_page() if order in list_j else i
-        o = Order(order, data)
+        data = j if order in list_j else i
+        o = Order(order, data, page_position)
+        o.runtime()
+        if order in list_j:
+            page_position = o.page_position
         order = input("命令は: ")
 
