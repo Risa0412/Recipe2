@@ -1,14 +1,10 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <link rel="stylesheet" href="{{ url_for('static', filename='step.css') }}">
+        <link rel="stylesheet" href="step.css">
+        <meta charset="UTF-8">
     </head>
     <title>Hello from Flask</title>
-    {% if name %}
-    <h1>Hello {{ name }}!</h1>
-    {% else %}
-    <h1>Hello, World!</h1>
-    {% endif %}
 <body>
     <div class="card-container">
         <div class="card u-clearfix">
@@ -16,28 +12,17 @@
             <span class="card-number card-circle subtle">01</span>
             <span class="card-author subtle">John Smith</span>
             <h2 class="card-title">New Brunch Recipe</h2>
-            {% if text %}
-            <span class="card-description subtle" style="font-size:{{ text_size }}">{{ text }}</span>
-            {% endif %}
+            <span class="card-description subtle" id="card-description">text</span>
             <div class="card-read">Read</div>
             <span class="card-tag card-circle subtle">C</span>
         </div>
-            {% if img %}
-    {% for image in img %}
     <!-- <img src="{{image}}" width="104" height="142"> -->
-            <img src="{{ image }}" alt="" class="card-media" width="50%" height="50%" />
-            {% endfor %}
-            {% endif %}
+            <img src="" alt="" class="card-media"  id="card-media" width="50%" height="50%" />
         </div>
         <div class="card-shadow"></div>
     </div>
-
-
-{% if link %}
-<a href="https://www.w3schools.com">This is a link</a>
-{% endif %}
-
-
-
+    <script src="https://code.jquery.com/jquery-3.6.0.js"
+    integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+    <script src="step2.js"></script>
 </body>
 </html>

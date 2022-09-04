@@ -1,4 +1,5 @@
 import re
+from urllib import request
 from orders.ingredients import Ingredients
 from orders.ingredient import Ingredient
 from orders.page import Page
@@ -82,11 +83,13 @@ class Order:
     def runtime(self):
         func = self.reference.get(self.order, self.get_ingredient)
         result, self.page_position = func()
+        data = []
         if isinstance(result, str):
-            print(result)
+            data.append(result)
         elif isinstance(result, list):
             for re in result:
-                print(re)
+                data.append(re)
+        return data
 
     
 if __name__ == '__main__':
@@ -101,7 +104,9 @@ if __name__ == '__main__':
     while order != "停止":
         data = j if order in list_j else i
         o = Order(order, data, page_position)
-        o.runtime()
+        data = o.runtime()
+        for d in data:
+            print(d)
         if order in list_j:
             page_position = o.page_position
         order = input("命令は: ")
