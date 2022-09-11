@@ -30,7 +30,7 @@ class Order:
         大項目の材料名を命令としたとき、データ(self.data["ingredients_list"])から材料の情報を返す
         :return: 
         """
-        return Ingredients(self.data["ingredients_list"], self.order).return_data()
+        return Ingredients(self.data["ingredients_list"], self.order).return_data(), self.page_position
 
     def get_ingredient(self):
         """
@@ -38,7 +38,7 @@ class Order:
         :return: 
         """
         print(self.data.keys())
-        return Ingredient(self.data["ingredients_list"], self.order).return_data()
+        return Ingredient(self.data["ingredients_list"], self.order).return_data(), self.page_position
 
     def get_start_page(self):
         """

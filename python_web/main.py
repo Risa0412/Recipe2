@@ -51,10 +51,14 @@ class MainWindow(QMainWindow):
         for d in data:
             if isinstance(d, list):
                 add.extend([f'<img src="{img}">' for img in d])
+                _img = d[0]
             else:
                 add.append(f'<p>{d}</p>')
+                _text = d
         print(add)
-        self.page.runJavaScript(f"document.getElementById('global_announce_wrapper').innerHTML += '{'<br>'.join(add)}'")
+        template = f'<div style="clear: left;"><div class="large_photo_content large_photo_dialog enable_large portrait type_step"><div class="large_photo_content_title recipe_title">お月見だんごで郷土のおやつ しんこだんご</div><div class="main"><h3 class="large_photo_title"></h3><div class="user_name"><a class="author recipe_author_container" href="/kitchen/15123348"><img src="https://img.cpcdn.com/users/15123348/40x40c/f08986b6fa158df228de18956d6d8a80?u=15123348&amp;p=1521126337" width="20" height="20" alt="薩摩のやすねこ" class="author_icon">薩摩のやすねこ</a></div><div class="large_photo_container"><div class="large_photo_wrapper"><img class="large_photo" style="height:70%; max-width:600px;" src="{_img}"></div><div class="large_photo_info"><div class="large_photo_description"><p>{_text}</p></div><div class="large_photo_contributor"></div></div></div><div class="dialog_bottom"><div class="page_count">4 / 6</div></div></div></div></div>'
+        # self.page.runJavaScript(f"document.getElementById('contents').innerHTML = '{'<br>'.join(add)}'")
+        self.page.runJavaScript(f"document.getElementById('contents').innerHTML = '{template}'")
 
 
 if __name__ == '__main__':
@@ -67,20 +71,9 @@ if __name__ == '__main__':
 
     
 
+    '''
+    2022/09/11 今後 やること
+    ・綺麗なデザインにする
+    ・広告を消す
 
-'''
-self.reference = {
-    "材料":self.get_ingredients, 
-    "ざいりょう":self.get_ingredients, 
-    "ザイリョウ":self.get_ingredients, 
-    "最初":self.get_start_page,
-    "スタート":self.get_start_page,
-    "次":self.get_next_page,
-    "進む":self.get_next_page,
-    "戻る":self.get_before_page,
-    "前":self.get_before_page,
-    "最後":self.get_last_page,
-    "サイゴ":self.get_last_page,
-    "さいご":self.get_last_page
-    }
     '''
