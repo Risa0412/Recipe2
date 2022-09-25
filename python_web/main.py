@@ -1,3 +1,4 @@
+from os import remove
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtWebEngineWidgets import *
@@ -10,12 +11,15 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__(*args, **kwargs)
 
         self.browser = QWebEngineView()
+        self.browser.resize(990, 800)
         # self.browser.setUrl(QUrl(url))
 
         # timer = QTimer()
         # timer.timeout.connect(self.append)
         self.page = self.browser.page()
         # self.page.loadFinished.connect(lambda: timer.start(4000))
+        self.page.loadFinished.connect(self.edit_size)
+        self.page.loadFinished.connect(self.remove_ad)
         self.page.setUrl(QUrl(url))
 
         self.setCentralWidget(self.browser)
@@ -60,6 +64,27 @@ class MainWindow(QMainWindow):
         # self.page.runJavaScript(f"document.getElementById('contents').innerHTML = '{'<br>'.join(add)}'")
         self.page.runJavaScript(f"document.getElementById('contents').innerHTML = '{template}'")
 
+    def remove_ad(self):
+        # search_footer_wrapper: ad_wrapper
+        tags = {
+            "getElementsByClassName": "ad_wrapper",
+            "getElementById": "side"
+        }
+        for element, tag in tags.items():
+            self.page.runJavaScript(
+                f"[...document.{element}('{tag}')].map(n => n && n.remove())" 
+                if element == 'getElementsByClassName' 
+                else f"document.{element}('{tag}').remove()"
+        )
+
+    def edit_size(self):
+        self.page.runJavaScript("document.getElementById('main').style.width = '780px';")
+        self.page.runJavaScript("document.getElementById('container').style.width = '780px';")
+        self.page.runJavaScript("document.getElementById('main-photo').style.height = 'auto';")
+        self.page.runJavaScript("document.getElementById('main-photo').style.max-height = 'null';")
+        self.page.runJavaScript("document.getElementById('main-photo').style.max-width = '100%';")
+
+
 
 if __name__ == '__main__':
     url = 'https://cookpad.com/'
@@ -76,4 +101,7 @@ if __name__ == '__main__':
     ・綺麗なデザインにする
     ・広告を消す
 
+horizontal_rectangles clearfix
+id="side"
+id="contents"
     '''
