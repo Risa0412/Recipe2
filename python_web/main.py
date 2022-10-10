@@ -10,6 +10,7 @@ class MainWindow(QMainWindow):
     def __init__(self, url, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
 
+        self.url = ''
         self.browser = QWebEngineView()
         self.browser.resize(990, 800)
         # self.browser.setUrl(QUrl(url))
@@ -17,25 +18,40 @@ class MainWindow(QMainWindow):
         # timer = QTimer()
         # timer.timeout.connect(self.append)
         self.page = self.browser.page()
-        # self.page.loadFinished.connect(lambda: timer.start(4000))
-        self.page.loadFinished.connect(self.edit_size)
-        self.page.loadFinished.connect(self.remove_ad)
         self.page.setUrl(QUrl(url))
-
         self.setCentralWidget(self.browser)
 
         self.show()
-        self.get_order()
+        # self.page.clicked.connect(self.get_current_url)
+        self.page.loadFinished.connect(self.edit_size)
+        self.page.loadFinished.connect(self.remove_ad)
+        self.browser.focusProxy().installEventFilter(self)
+
+    def eventFilter(self, obj, event):
+        if obj is self.browser.focusProxy() and event.type() == event.MouseButtonPress:
+            self.page.loadStarted.connect(self.get_current_url)
+            print("☆☆", self.url, self.page.history().currentItem().url().toString())
+            if "recipe" in self.url:
+                self.get_order()  # "recipe"が含まれているURLのみ実行する
+        return super(MainWindow, self).eventFilter(obj, event)
 
     def get_order(self):
         import json
         import sys
         sys.path.append('..')
         from order import Order
+        from main import Manager
+        m = Manager()
+        runtime = json.load(open("runtime.json"))
 
-        with open('../120827325313727089740978093670340282809289569548.json', encoding='utf-8') as file:
+        m.get_soup(self.url)
+        m.get_recipe_title()
+        filename = m.runtime(runtime)
+
+        # self.page.url().toString()
+        with open(f'../{filename}.json', encoding='utf-8') as file:
             i = json.load(file)
-        with open('../page_120827325313727089740978093670340282809289569548.json', encoding='utf-8') as file:
+        with open(f'../page_{filename}.json', encoding='utf-8') as file:
             j = json.load(file)
         list_j = ['最初', 'スタート', '進む', '前', '戻る', '次', '最後', '終わり']
         order = input("命令は: ")
@@ -83,6 +99,10 @@ class MainWindow(QMainWindow):
         self.page.runJavaScript("document.getElementById('main-photo').style.height = 'auto';")
         self.page.runJavaScript("document.getElementById('main-photo').style.max-height = 'null';")
         self.page.runJavaScript("document.getElementById('main-photo').style.max-width = '100%';")
+
+    def get_current_url(self):
+        self.url = self.page.url().toString()
+        
 
 
 
