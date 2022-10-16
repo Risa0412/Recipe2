@@ -1,0 +1,56 @@
+{
+    "history": "定番の作り置きです。",
+    "history_title": "このレシピの生い立ち",
+    "ingredients_list": {
+        "default": {
+            "○すりごま": "大2〜",
+            "○マヨネーズ": "大3〜5",
+            "○醤油、砂糖": "各小1",
+            "ごぼう": "1本",
+            "人参": "1本"
+        }
+    },
+    "ingredients_title": "材料",
+    "memo": "野菜の茹で時間はお好みで加減して下さい。固めがよければ短く、柔らかいのがよければ長く茹でて下さい。すりごまが無ければ、いりごまを指でひねって、潰しながら入れると香りが立ちます。",
+    "memo_title": "コツ・ポイント",
+    "preparation_list": {
+        "1": {
+            "description": "ごぼうは千切りにし、水にさらしておく。人参も同様に千切りにする。",
+            "help_links": [
+                {}
+            ],
+            "image": [
+                "https://img.cpcdn.com/steps/31023308/m/d7df239b954539445260604e16d04ae5?u=19218378&p=1609040745"
+            ]
+        },
+        "2": {
+            "description": "鍋に水を沸騰させ、ごぼうを入れて2分茹でたら、人参も加えてさらに1分茹でる。",
+            "help_links": [
+                {}
+            ],
+            "image": [
+                "https://img.cpcdn.com/steps/31023311/m/6f4400041d62d1aaed8e16a7b128d151?u=19218378&p=1609040780"
+            ]
+        },
+        "3": {
+            "description": "ボウルに○を全て入れ、混ぜ合わせておく。",
+            "help_links": [
+                {}
+            ],
+            "image": [
+                "https://img.cpcdn.com/steps/31023316/m/bd0f1dd42861fa761a6442f01a4a9f36?u=19218378&p=1609040832"
+            ]
+        },
+        "4": {
+            "description": "2をザルにあげて水を切り、3のボウルに入れて混ぜ合わせる。",
+            "help_links": [
+                {}
+            ],
+            "image": [
+                "https://img.cpcdn.com/steps/31023323/m/7941dacbbe3a7ad73ab0fe29527f9c2e?u=19218378&p=1609040899"
+            ]
+        }
+    },
+    "preparation_title": "作り方",
+    "title": "ごぼうと人参の胡麻マヨ  ＊作り置き＊"
+}
